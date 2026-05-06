@@ -107,13 +107,21 @@ export function LandingNavbar() {
               onMouseLeave={() => setActiveDropdown(null)}
               className="relative py-4"
             >
-              <Link
-                href={link.href}
-                className="flex items-center gap-1 text-[13px] font-semibold uppercase tracking-widest text-white/70 transition-all hover:text-[#D4F84A]"
-              >
-                {link.label}
-                {link.hasDropdown && <ChevronDown className={`h-3 w-3 transition-transform ${activeDropdown === link.label ? 'rotate-180' : ''}`} />}
-              </Link>
+              {link.hasDropdown ? (
+                <button
+                  className="flex items-center gap-1 text-[13px] font-semibold uppercase tracking-widest text-white/70 transition-all hover:text-[#D4F84A] outline-none"
+                >
+                  {link.label}
+                  <ChevronDown className={`h-3 w-3 transition-transform ${activeDropdown === link.label ? 'rotate-180' : ''}`} />
+                </button>
+              ) : (
+                <Link
+                  href={link.href}
+                  className="flex items-center gap-1 text-[13px] font-semibold uppercase tracking-widest text-white/70 transition-all hover:text-[#D4F84A]"
+                >
+                  {link.label}
+                </Link>
+              )}
 
               {/* Products Mega Menu */}
               <AnimatePresence>
