@@ -16,9 +16,33 @@ import {
   Type,
   Monitor,
   Calculator,
-  FileSearch
+  FileSearch,
+  Zap,
+  Users,
+  RefreshCw,
+  ShieldAlert,
+  Lock,
+  Key
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
+const productsMenu = {
+  intelligence: [
+    { title: "Project Dashboard", desc: "Unified view of health", icon: Layout },
+    { title: "Topology Mapping", desc: "Real-time 3D visualization", icon: Monitor },
+    { title: "Root Cause AI", desc: "Intelligent troubleshooting", icon: FileSearch },
+  ],
+  automation: [
+    { title: "Playbook Engine", icon: Zap },
+    { title: "Agent Orchestrator", icon: Users },
+    { title: "Network CI/CD", icon: RefreshCw },
+  ],
+  security: [
+    { title: "Fraud Detection", icon: ShieldAlert },
+    { title: "Audit Logging", icon: Lock },
+    { title: "RBAC Control", icon: Key },
+  ]
+};
 
 const resourcesMenu = {
   discover: [
@@ -40,7 +64,7 @@ const resourcesMenu = {
 };
 
 const navLinks = [
-  { label: "Products", href: "/products" },
+  { label: "Products", href: "/products", hasDropdown: true },
   { label: "Solutions", href: "#solutions" },
   { label: "Resources", href: "/resources", hasDropdown: true },
   { label: "Pricing", href: "/pricing" },
@@ -90,6 +114,81 @@ export function LandingNavbar() {
                 {link.label}
                 {link.hasDropdown && <ChevronDown className={`h-3 w-3 transition-transform ${activeDropdown === link.label ? 'rotate-180' : ''}`} />}
               </Link>
+
+              {/* Products Mega Menu */}
+              <AnimatePresence>
+                {activeDropdown === "Products" && link.label === "Products" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="fixed left-0 right-0 top-[88px] z-[-1] px-4 md:px-8"
+                  >
+                    <div className="mx-auto max-w-7xl overflow-hidden rounded-[24px] border border-white/10 bg-[#0F171A] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] backdrop-blur-3xl">
+                      <div className="grid grid-cols-3 divide-x divide-white/5">
+                        
+                        {/* Intelligence Column */}
+                        <div className="p-6">
+                          <div className="mb-6 border-t border-white/5 pt-4">
+                            <p className="text-[13px] font-bold uppercase tracking-[0.2em] text-[#D4F84A]">Project Intelligence</p>
+                          </div>
+                          <div className="flex flex-col gap-6">
+                            {productsMenu.intelligence.map((item) => (
+                              <Link key={item.title} href="#" className="group flex items-start gap-4">
+                                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5 text-white/70 transition-all group-hover:bg-[#D4F84A] group-hover:text-black">
+                                  <item.icon className="h-4.5 w-4.5" />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-bold text-white transition-colors group-hover:text-[#D4F84A]">{item.title}</p>
+                                  {item.desc && <p className="mt-0.5 text-[11px] text-slate-500 leading-relaxed group-hover:text-slate-400">{item.desc}</p>}
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Automation Column */}
+                        <div className="p-6">
+                          <div className="mb-6 border-t border-white/5 pt-4">
+                            <p className="text-[13px] font-bold uppercase tracking-[0.2em] text-[#D4F84A]">Automation & Scale</p>
+                          </div>
+                          <div className="flex flex-col gap-4">
+                            {productsMenu.automation.map((item) => (
+                              <Link key={item.title} href="#" className="group flex items-center gap-3 py-0.5">
+                                <div className="flex h-7 w-7 items-center justify-center rounded-md bg-white/5 text-white/60 transition-all group-hover:bg-white/10 group-hover:text-[#D4F84A]">
+                                  <item.icon className="h-3.5 w-3.5" />
+                                </div>
+                                <span className="text-[13px] font-medium text-slate-400 transition-colors group-hover:text-white">{item.title}</span>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Security Column */}
+                        <div className="p-6">
+                          <div className="mb-6 border-t border-white/5 pt-4">
+                            <p className="text-[13px] font-bold uppercase tracking-[0.2em] text-[#D4F84A]">Security & Control</p>
+                          </div>
+                          <div className="flex flex-col gap-4">
+                            {productsMenu.security.map((item) => (
+                              <Link key={item.title} href="#" className="group flex items-center gap-3 py-0.5">
+                                <div className="flex h-7 w-7 items-center justify-center rounded-md bg-white/5 text-white/60 transition-all group-hover:bg-white/10 group-hover:text-[#D4F84A]">
+                                  <item.icon className="h-3.5 w-3.5" />
+                                </div>
+                                <span className="text-[13px] font-medium text-slate-400 transition-colors group-hover:text-white">{item.title}</span>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#D4F84A]/30 to-transparent" />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Resources Mega Menu - Full Width */}
               <AnimatePresence>
