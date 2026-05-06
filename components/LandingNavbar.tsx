@@ -95,7 +95,7 @@ export function LandingNavbar() {
       >
         {/* Logo */}
         <Link href="/" className="flex items-center shrink-0">
-          {/* Logo text removed */}
+          <span className="text-xl font-bold tracking-[0.2em] text-white uppercase">TeleRoot</span>
         </Link>
 
         {/* Desktop Nav */}
