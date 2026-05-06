@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: #FFFFFF;
+}
+
+body {
+  min-height: 100vh;
+  background: #FFFFFF;
+  color: #10202A;
+}
+
+@media (min-width: 1024px) {
+  .app-shell {
+    transition: padding-left 300ms ease;
+  }
+
+  .sidebar-collapsed .app-shell {
+    padding-left: 5rem !important;
+  }
+}
+
+.traffic-line {
+  stroke-dasharray: 1400;
+  stroke-dashoffset: 1400;
+  animation: traffic-draw 1.35s ease-out forwards, traffic-glow 2.8s ease-in-out infinite;
+}
+
+.traffic-line-inbound {
+  animation-delay: 0.12s, 1.45s;
+}
+
+.traffic-line-outbound {
+  animation-delay: 0.24s, 1.55s;
+}
+
+.traffic-point {
+  opacity: 0;
+  transform-origin: center;
+  animation: traffic-point-pop 1.8s ease-out 0.8s forwards;
+}
+
+@keyframes traffic-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes traffic-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(37, 99, 235, 0));
+  }
+
+  50% {
+    filter: drop-shadow(0 3px 6px rgba(37, 99, 235, 0.18));
+  }
+}
+
+@keyframes traffic-point-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.22);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.topology-link {
+  stroke-dasharray: 4 5;
+  animation: topology-link-flow 1.8s linear infinite;
+}
+
+.topology-pulse {
+  opacity: 0.18;
+  animation: topology-node-pulse 1.8s ease-out infinite;
+}
+
+@keyframes topology-link-flow {
+  to {
+    stroke-dashoffset: -18;
+  }
+}
+
+@keyframes topology-node-pulse {
+  0% {
+    opacity: 0.28;
+    transform: scale(1);
+  }
+
+  70% {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+
+.rca-flow {
+  stroke-linecap: round;
+  stroke-width: 1.6;
+  stroke-dasharray: 6 6;
+  animation: rca-flow 1.7s linear infinite;
+}
+
+.rca-flow-good {
+  stroke: rgba(22, 163, 74, 0.62);
+}
+
+.rca-flow-bad {
+  stroke: rgba(220, 38, 38, 0.72);
+}
+
+.rca-flow-warn {
+  stroke: rgba(217, 119, 6, 0.68);
+}
+
+.rca-packet-good {
+  fill: #16A34A;
+}
+
+.rca-packet-bad {
+  fill: #DC2626;
+}
+
+.rca-critical-pulse {
+  opacity: 0.2;
+  animation: rca-critical-pulse 1.5s ease-out infinite;
+}
+
+@keyframes rca-flow {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes rca-critical-pulse {
+  0% {
+    opacity: 0.28;
+    transform: scale(1);
+  }
+
+  80% {
+    opacity: 0;
+    transform: scale(1.65);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.65);
+  }
+}
+
+/* Custom Scrollbar for Sidebar */
+.sidebar-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
