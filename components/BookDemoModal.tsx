@@ -1,25 +1,51 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  X, Calendar, Users, Monitor, Lock, CheckCircle2, ChevronLeft, ChevronRight, 
+  X, Calendar, Lock, CheckCircle2, ChevronLeft, ChevronRight, 
   ChevronDown, Check
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
 
 interface BookDemoModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+const timeZoneOptions = [
+  { label: "(GMT+05:30) India Standard Time", value: "Asia/Kolkata" },
+  { label: "(GMT-08:00) Pacific Time", value: "America/Los_Angeles" },
+  { label: "(GMT-05:00) Eastern Time", value: "America/New_York" },
+  { label: "(GMT+00:00) London", value: "Europe/London" }
+];
+
+const demoSlotTimes = [
+  [10, 0],
+  [11, 0],
+  [13, 0],
+  [14, 0],
+  [15, 0],
+  [16, 30]
+];
+
+const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" });
+const dateKey = (date: Date) => `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+const startOfDay = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+const isSameDay = (left: Date, right: Date) => dateKey(left) === dateKey(right);
+
 export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
   const [step, setStep] = useState<"form" | "success">("form");
   const [isFormCompleted, setIsFormCompleted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [now, setNow] = useState(() => new Date());
 
   // Scheduling states
-  const [selectedDate, setSelectedDate] = useState<number | null>(null);
+  const [visibleMonth, setVisibleMonth] = useState(() => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  });
+  const [selectedTimeZone, setSelectedTimeZone] = useState(timeZoneOptions[0].value);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   // Form states
@@ -39,6 +65,103 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
     "AI Copilot", "Alerts & Incidents", "Monitoring & Metrics", 
     "Integrations", "Reports & Analytics", "Other"
   ];
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const timer = window.setInterval(() => {
+      setNow(new Date());
+    }, 30000);
+
+    return () => window.clearInterval(timer);
+  }, [isOpen]);
+
+  const calendarDays = useMemo(() => {
+    const year = visibleMonth.getFullYear();
+    const month = visibleMonth.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const leadingDays = firstDay.getDay();
+    const days: Date[] = [];
+
+    for (let index = leadingDays - 1; index >= 0; index -= 1) {
+      days.push(new Date(year, month, -index));
+    }
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      days.push(new Date(year, month, day));
+    }
+
+    while (days.length % 7 !== 0) {
+      const lastDay = days[days.length - 1];
+      days.push(new Date(lastDay.getFullYear(), lastDay.getMonth(), lastDay.getDate() + 1));
+    }
+
+    return days;
+  }, [visibleMonth]);
+
+  const availableSlots = useMemo(() => {
+    if (!selectedDate) return [];
+
+    const minimumBookingTime = new Date(now.getTime() + 60 * 60 * 1000);
+
+    return demoSlotTimes
+      .map(([hour, minute]) => new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate(),
+        hour,
+        minute
+      ))
+      .filter((slot) => slot > minimumBookingTime)
+      .map((slot) => ({
+        id: slot.toISOString(),
+        label: new Intl.DateTimeFormat("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+          timeZone: selectedTimeZone
+        }).format(slot)
+      }));
+  }, [now, selectedDate, selectedTimeZone]);
+
+  const selectedSlotLabel = useMemo(() => {
+    if (!selectedTime) return null;
+
+    const selectedSlot = new Date(selectedTime);
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: selectedTimeZone
+    }).format(selectedSlot);
+  }, [selectedTime, selectedTimeZone]);
+
+  const localTimeLabel = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZoneName: "short",
+    timeZone: selectedTimeZone
+  }).format(now);
+
+  const isDateAvailable = (date: Date) => {
+    const day = date.getDay();
+    const isWeekend = day === 0 || day === 6;
+    const isPast = startOfDay(date) < startOfDay(now);
+    const isOutsideVisibleMonth = date.getMonth() !== visibleMonth.getMonth();
+
+    return !isWeekend && !isPast && !isOutsideVisibleMonth;
+  };
+
+  const handleMonthChange = (direction: number) => {
+    setVisibleMonth((current) => new Date(current.getFullYear(), current.getMonth() + direction, 1));
+    setSelectedDate(null);
+    setSelectedTime(null);
+  };
 
   const handleInterestToggle = (interest: string) => {
     setSelectedInterests(prev => 
@@ -88,6 +211,9 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
     setSelectedInterests([]);
     setSelectedDate(null);
     setSelectedTime(null);
+    setSelectedTimeZone(timeZoneOptions[0].value);
+    const today = new Date();
+    setVisibleMonth(new Date(today.getFullYear(), today.getMonth(), 1));
     onClose();
   };
 
@@ -287,13 +413,19 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
                 <div className="relative z-10 flex flex-col h-full">
                   <div className="flex flex-col gap-1 mb-6 border-b border-white/5 pb-4">
                     <h3 className="text-lg font-bold text-white">Select a date & time</h3>
-                    <p className="text-[10px] text-slate-400">All times are shown in your local time (IST)</p>
+                    <p className="text-[10px] text-slate-400">Slots update in real time. Current selected-zone time: {localTimeLabel}</p>
                     <div className="mt-2 relative self-start">
-                      <select className="appearance-none rounded-md border border-white/10 bg-white/5 py-1.5 pl-2.5 pr-6 text-[10px] font-medium text-slate-300 outline-none [&>option]:bg-[#13161F]">
-                        <option>(GMT+05:30) India Standard Time</option>
-                        <option>(GMT-08:00) Pacific Time</option>
-                        <option>(GMT-05:00) Eastern Time</option>
-                        <option>(GMT+00:00) London</option>
+                      <select
+                        value={selectedTimeZone}
+                        onChange={(event) => {
+                          setSelectedTimeZone(event.target.value);
+                          setSelectedTime(null);
+                        }}
+                        className="appearance-none rounded-md border border-white/10 bg-white/5 py-1.5 pl-2.5 pr-6 text-[10px] font-medium text-slate-300 outline-none [&>option]:bg-[#13161F]"
+                      >
+                        {timeZoneOptions.map((timeZone) => (
+                          <option key={timeZone.value} value={timeZone.value}>{timeZone.label}</option>
+                        ))}
                       </select>
                       <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-500 pointer-events-none" />
                     </div>
@@ -302,10 +434,10 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
                   {/* Calendar UI */}
                   <div className="rounded-xl border border-white/5 bg-[#0F1517] p-4 shadow-inner">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs font-bold text-white">May 2026</span>
+                      <span className="text-xs font-bold text-white">{monthFormatter.format(visibleMonth)}</span>
                       <div className="flex gap-1.5">
-                        <button type="button" className="h-5 w-5 rounded flex items-center justify-center bg-white/5 text-slate-400 hover:text-white transition-colors"><ChevronLeft className="h-3 w-3" /></button>
-                        <button type="button" className="h-5 w-5 rounded flex items-center justify-center bg-white/5 text-slate-400 hover:text-white transition-colors"><ChevronRight className="h-3 w-3" /></button>
+                        <button type="button" onClick={() => handleMonthChange(-1)} className="h-5 w-5 rounded flex items-center justify-center bg-white/5 text-slate-400 hover:text-white transition-colors"><ChevronLeft className="h-3 w-3" /></button>
+                        <button type="button" onClick={() => handleMonthChange(1)} className="h-5 w-5 rounded flex items-center justify-center bg-white/5 text-slate-400 hover:text-white transition-colors"><ChevronRight className="h-3 w-3" /></button>
                       </div>
                     </div>
                     <div className="grid grid-cols-7 gap-1 text-center mb-1.5">
@@ -314,23 +446,28 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
                       ))}
                     </div>
                     <div className="grid grid-cols-7 gap-1 text-center text-[11px]">
-                      {[27,28,29,30,1,2,3,4,5,6,7,8,9,10,11,12].map((d, i) => (
-                        <div key={i} className="h-7 flex items-center justify-center text-slate-500 pointer-events-none">{d}</div>
-                      ))}
-                      {[13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31].map((d) => (
+                      {calendarDays.map((date) => {
+                        const isAvailable = isDateAvailable(date);
+                        const isSelected = selectedDate && isSameDay(selectedDate, date);
+
+                        return (
                         <button 
-                          key={`active-${d}`}
+                          key={dateKey(date)}
                           type="button"
-                          onClick={() => { setSelectedDate(d); setSelectedTime(null); }}
+                          disabled={!isAvailable}
+                          onClick={() => { setSelectedDate(date); setSelectedTime(null); }}
                           className={`h-7 rounded-full flex items-center justify-center transition-all ${
-                            selectedDate === d 
+                            isSelected 
                               ? "bg-[#41bf63] text-black font-bold shadow-[0_0_8px_rgba(65,191,99,0.3)]" 
-                              : "text-slate-300 hover:bg-white/10 hover:text-white border border-transparent hover:border-white/10"
+                              : isAvailable
+                                ? "text-slate-300 hover:bg-white/10 hover:text-white border border-transparent hover:border-white/10"
+                                : "text-slate-600 cursor-not-allowed"
                           }`}
                         >
-                          {d}
+                          {date.getDate()}
                         </button>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -343,23 +480,31 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
                        </div>
                     ) : (
                        <motion.div initial={{opacity: 0}} animate={{opacity: 1}} className="flex-1 flex flex-col">
-                         <p className="text-[11px] font-bold text-white mb-3 text-center">Available Times for May {selectedDate}</p>
+                         <p className="text-[11px] font-bold text-white mb-3 text-center">
+                           Available times for {selectedDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                         </p>
+                         {availableSlots.length > 0 ? (
                          <div className="grid grid-cols-3 gap-2 mb-6">
-                           {['10:00 AM', '11:00 AM', '01:00 PM', '02:00 PM', '03:00 PM', '04:30 PM'].map(t => (
+                           {availableSlots.map((slot) => (
                              <button 
-                               key={t}
+                               key={slot.id}
                                type="button"
-                               onClick={() => setSelectedTime(t)}
+                               onClick={() => setSelectedTime(slot.id)}
                                className={`w-full rounded-lg border py-2 text-center text-[10px] font-bold transition-all ${
-                                 selectedTime === t 
+                                 selectedTime === slot.id 
                                   ? "border-[#41bf63] bg-[#41bf63]/10 text-[#41bf63]" 
                                   : "border-white/10 text-slate-400 hover:border-white/30 hover:text-white bg-white/5"
                                }`}
                              >
-                               {t}
+                               {slot.label}
                              </button>
                            ))}
                          </div>
+                         ) : (
+                           <div className="mb-6 rounded-xl border border-dashed border-white/10 bg-white/5 p-4 text-center">
+                             <p className="text-[10px] font-medium text-slate-500">No remaining slots for this date. Please choose another weekday.</p>
+                           </div>
+                         )}
 
                          <div className="mt-auto pt-4 flex flex-col items-center">
                            <AnimatePresence>
@@ -379,7 +524,7 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
                                    {isLoading ? (
                                      <div className="h-4 w-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                                    ) : (
-                                     "Request for demo"
+                                     `Request demo for ${selectedSlotLabel}`
                                    )}
                                  </button>
                                </motion.div>
@@ -401,24 +546,26 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
 
           {step === "success" && (
             /* Success State */
-            <div className="p-10 lg:p-16 flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px]">
+            <div className="relative flex min-h-[360px] flex-col items-center justify-center overflow-hidden px-6 py-10 text-center sm:px-10 lg:px-14">
               <div className="absolute inset-0 z-0 pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#41bf63] rounded-full blur-[150px] opacity-10"></div>
+                <div className="absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#41bf63] opacity-[0.07] blur-[120px]"></div>
               </div>
               
-              <div className="relative z-10 flex flex-col items-center">
-                <div className="h-20 w-20 rounded-full bg-[#41bf63]/10 border border-[#41bf63]/20 flex items-center justify-center mb-6">
-                  <CheckCircle2 className="h-10 w-10 text-[#41bf63]" />
+              <div className="relative z-10 flex w-full max-w-lg flex-col items-center">
+                <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-[#41bf63]/25 bg-[#41bf63]/10">
+                  <CheckCircle2 className="h-8 w-8 text-[#41bf63]" />
                 </div>
-                <h2 className="text-3xl font-bold text-white mb-4">Request Submitted Successfully!</h2>
-                <p className="text-slate-400 max-w-md mx-auto mb-8 leading-relaxed">
-                  Thank you for your interest in Teleroot AI, <span className="text-white font-semibold">{formData.fullName}</span>. 
-                  We've received your request and our team is currently reviewing your details. 
-                  You will receive an email shortly at <span className="text-[#41bf63] font-medium">{formData.workEmail}</span> with a link to schedule your personalized demo session.
-                </p>
+                <h2 className="mb-4 text-2xl font-bold tracking-tight text-white">Request Submitted Successfully!</h2>
+                <div className="mb-7 rounded-2xl border border-white/8 bg-white/[0.03] px-6 py-5">
+                  <p className="text-sm leading-7 text-slate-400">
+                    Thank you for your interest in Teleroot AI, <span className="font-semibold text-white">{formData.fullName}</span>. 
+                    We've received your request for <span className="font-semibold text-white">{selectedSlotLabel}</span>. 
+                    You will receive an email shortly at <span className="font-medium text-[#41bf63]">{formData.workEmail}</span> with the meeting details.
+                  </p>
+                </div>
                 <button 
                   onClick={handleReset}
-                  className="rounded-xl border border-white/10 bg-white/5 px-8 py-3 text-sm font-bold text-white transition-all hover:bg-white/10"
+                  className="h-11 rounded-xl border border-white/10 bg-white/5 px-8 text-sm font-bold text-white transition-all hover:bg-white/10"
                 >
                   Close Window
                 </button>

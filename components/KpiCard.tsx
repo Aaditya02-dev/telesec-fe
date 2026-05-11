@@ -50,7 +50,7 @@ export function KpiCard({ title, value, icon, trend, trendType, color }: KpiCard
       </div>
 
       {/* Text block */}
-      <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+      <div className="flex flex-col gap-0.5 flex-1 min-w-0 text-center">
         <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider leading-none truncate">
           {title}
         </span>
@@ -61,7 +61,7 @@ export function KpiCard({ title, value, icon, trend, trendType, color }: KpiCard
           {value}
         </span>
         {trend && (
-          <div className={cn("flex items-center gap-1 mt-0.5", trendColor)}>
+          <div className={cn("flex items-center justify-center gap-1 mt-0.5", trendColor)}>
             {trendType === "up"      && <TrendingUp   className="h-3 w-3 shrink-0" />}
             {trendType === "down"    && <TrendingDown  className="h-3 w-3 shrink-0" />}
             {trendType === "neutral" && <Minus         className="h-3 w-3 shrink-0" />}

@@ -292,10 +292,10 @@ export default function FraudDetectionPage() {
                       value={searchTerm}
                     />
                   </div>
-                  <select className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-xs font-bold text-white outline-none focus:border-[#41bf63]" onChange={(event) => setRiskFilter(event.target.value)} value={riskFilter}>
+                  <select className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-xs font-bold text-white outline-none focus:border-[#41bf63] [&>option]:bg-[#13161F] [&>option]:text-white" onChange={(event) => setRiskFilter(event.target.value)} value={riskFilter}>
                     {["All", "High", "Medium"].map((item) => <option key={item}>{item}</option>)}
                   </select>
-                  <select className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-xs font-bold text-white outline-none focus:border-[#41bf63]" onChange={(event) => setStatusFilter(event.target.value)} value={statusFilter}>
+                  <select className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-xs font-bold text-white outline-none focus:border-[#41bf63] [&>option]:bg-[#13161F] [&>option]:text-white" onChange={(event) => setStatusFilter(event.target.value)} value={statusFilter}>
                     {["All", "Blocked", "Monitored", "Under Review"].map((item) => <option key={item}>{item}</option>)}
                   </select>
                   <MiniButton onClick={() => { setSearchTerm(""); setRiskFilter("All"); setStatusFilter("All"); }}>Clear</MiniButton>

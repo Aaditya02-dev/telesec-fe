@@ -29,7 +29,7 @@ const steps = [
 
 export function LandingHowItWorks() {
   return (
-    <section className="bg-white py-12">
+    <section id="how-it-works" className="bg-white py-12">
       <div className="container mx-auto px-6">
         {/* Minimalist Header */}
         <div className="mb-16 text-center">
@@ -71,15 +71,7 @@ export function LandingHowItWorks() {
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          className="mt-12 rounded-[32px] bg-slate-50 p-10 text-center border border-slate-100"
-        >
-          <p className="text-sm font-bold text-[#1F2C30] uppercase tracking-widest">
-            Ready to transform your network? <Link href="/dashboard" className="ml-2 text-[#85B100] hover:underline">Get Started →</Link>
-          </p>
-        </motion.div>
+
       </div>
     </section>
   );

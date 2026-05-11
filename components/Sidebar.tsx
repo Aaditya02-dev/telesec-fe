@@ -20,7 +20,8 @@ import {
   Workflow,
   Settings,
   BarChart3,
-  HelpCircle
+  HelpCircle,
+  CreditCard
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -35,14 +36,29 @@ const menuItems = [
   { label: "Optimization", icon: ChartNoAxesCombined, href: "/optimization", badge: null },
   { label: "AI Copilot", icon: Bot, href: "/ai-copilot", badge: null },
   { label: "Automation Playbooks", icon: Workflow, href: "/automation-playbooks", badge: null },
+  { label: "Billing & Usage", icon: CreditCard, href: "/billing-usage", badge: null },
   { label: "Settings", icon: Settings, href: "/settings", badge: null },
   { label: "Reports", icon: BarChart3, href: "/reports", badge: null },
   { label: "Help Center", icon: HelpCircle, href: "/help", badge: null }
 ];
 
+const experimentalFeatures = [
+  { label: "AI Automation", icon: Workflow },
+  { label: "Smart Alerts", icon: Siren },
+  { label: "Topology Beta", icon: Network },
+  { label: "AI Copilot", icon: Bot },
+  { label: "Labs Mode", icon: BrainCircuit },
+];
+
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [isBetaUser, setIsBetaUser] = useState(false);
+
+  useEffect(() => {
+    const beta = localStorage.getItem("isBetaUser") === "true";
+    setIsBetaUser(beta);
+  }, []);
 
   useEffect(() => {
     document.documentElement.classList.toggle("sidebar-collapsed", collapsed);
@@ -124,6 +140,33 @@ export function Sidebar() {
               </Link>
             );
           })}
+
+          {/* Experimental Features Section */}
+          {isBetaUser && !collapsed && (
+            <div className="pt-8 pb-4">
+              <div className="flex items-center gap-2 px-4 mb-4">
+                <span className="h-px flex-1 bg-white/5" />
+                <span className="text-[9px] font-black uppercase tracking-widest text-[#41bf63]">Experimental Features</span>
+                <span className="h-px flex-1 bg-white/5" />
+              </div>
+              <div className="space-y-1">
+                {experimentalFeatures.map((item) => (
+                  <div 
+                    key={item.label}
+                    className="flex items-center justify-between px-4 py-2 group cursor-pointer hover:bg-white/5 rounded-lg transition-all"
+                  >
+                    <div className="flex items-center gap-4">
+                      <item.icon className="h-4 w-4 text-slate-500 group-hover:text-[#41bf63]" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-white">{item.label}</span>
+                    </div>
+                    <div className="h-4 w-7 rounded-full bg-white/10 p-0.5 transition-all group-hover:bg-[#41bf63]/20">
+                      <div className="h-3 w-3 rounded-full bg-slate-600 transition-all group-hover:bg-[#41bf63] group-hover:translate-x-3" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -134,8 +177,13 @@ export function Sidebar() {
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Environment</p>
             <p className="mt-1 text-xs font-bold text-white uppercase flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[#41bf63] animate-pulse" />
-              Production Network
+              {isBetaUser ? "Insider Beta Build" : "Production Network"}
             </p>
+            {isBetaUser && (
+              <div className="mt-2 text-[8px] font-bold text-[#41bf63] uppercase tracking-tighter opacity-70">
+                You are using experimental tools.
+              </div>
+            )}
           </div>
         </div>
       )}

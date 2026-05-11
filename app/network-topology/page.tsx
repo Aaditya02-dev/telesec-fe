@@ -176,21 +176,21 @@ function TopologyWorkspace() {
             />
           </div>
           <select
-            className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-xs font-bold text-white outline-none focus:border-[#41bf63]"
+            className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-xs font-bold text-white outline-none focus:border-[#41bf63] [&>option]:bg-[#13161F] [&>option]:text-white"
             onChange={(event) => setDeviceFilter(event.target.value)}
             value={deviceFilter}
           >
             {["All", "Router", "Switch", "Server", "Firewall", "Wireless"].map((item) => <option key={item}>{item}</option>)}
           </select>
           <select
-            className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-xs font-bold text-white outline-none focus:border-[#41bf63]"
+            className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-xs font-bold text-white outline-none focus:border-[#41bf63] [&>option]:bg-[#13161F] [&>option]:text-white"
             onChange={(event) => setStatusFilter(event.target.value)}
             value={statusFilter}
           >
             {["All", "Healthy", "Warning", "Down"].map((item) => <option key={item}>{item}</option>)}
           </select>
           <select
-            className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-xs font-bold text-white outline-none focus:border-[#41bf63]"
+            className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-xs font-bold text-white outline-none focus:border-[#41bf63] [&>option]:bg-[#13161F] [&>option]:text-white"
             onChange={(event) => setLayerFilter(event.target.value)}
             value={layerFilter}
           >

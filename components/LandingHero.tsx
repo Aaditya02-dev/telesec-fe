@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowUpRight, Award } from "lucide-react";
+import { ArrowUpRight, Award, Sparkles, ArrowRight } from "lucide-react";
 import { BookDemoModal } from "./BookDemoModal";
 
 export function LandingHero() {
@@ -44,13 +44,40 @@ export function LandingHero() {
             <Link href="/login" className="h-12 w-full sm:w-auto min-w-[180px] flex items-center justify-center rounded-full bg-[#41bf63] px-8 text-[13px] font-bold text-black transition-all hover:bg-[#bce628] shadow-lg">
               Get Started Free
             </Link>
-            <button 
+            <button
               onClick={() => setIsDemoModalOpen(true)}
               className="h-12 w-full sm:w-auto min-w-[180px] rounded-full border border-white/10 bg-white/5 px-8 text-[13px] font-bold text-white transition-all hover:bg-white/10"
             >
               Book a Demo
             </button>
           </div>
+
+          {/* Insider Beta Announcement */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mt-12 flex justify-center"
+          >
+            <div className="group relative flex items-center gap-3 overflow-hidden rounded-full bg-white/5 px-4 py-1.5 border border-white/10 transition-all hover:bg-white/10">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#41bf63]/20 text-[#41bf63]">
+                <Sparkles className="h-3 w-3" />
+              </span>
+              <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-white">
+                Teleroot Insider Beta is now live — Early users can access experimental AI features.
+              </p>
+              <button
+                onClick={() => {
+                  localStorage.setItem("isBetaUser", "true");
+                  window.location.href = "/login";
+                }}
+                className="flex items-center gap-1 text-[10px] font-black uppercase text-[#41bf63] hover:underline"
+              >
+                Join as Beta User
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
 

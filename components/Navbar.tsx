@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import { Bell, Menu, Search } from "lucide-react";
+import { Bell, Menu, Search, User, Shield, Users, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authApi } from "@/lib/api";
+import Link from "next/link";
 
 import { usePathname } from "next/navigation";
 
@@ -31,21 +32,25 @@ const pageTitles: { [key: string]: string } = {
   "/ai-copilot": "AI Copilot",
   "/agent-management": "Agent Management",
   "/automation-playbooks": "Automation Playbooks",
+  "/billing-usage": "Billing & Usage",
   "/settings": "System Settings",
   "/reports": "Analytics & Reports",
-  "/help": "Help Center"
+  "/help": "Help Center",
+  "/profile": "User Profile"
 };
 
 export function Navbar() {
   const pathname = usePathname();
   const [search, setSearch] = useState("");
   const [user, setUser] = useState<{ username: string; email: string } | null>(null);
+  const [isBetaUser, setIsBetaUser] = useState(false);
 
   const currentTitle = pageTitles[pathname] || "Dashboard";
 
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("access_token");
+      setIsBetaUser(localStorage.getItem("isBetaUser") === "true");
       if (token) {
         try {
           const userData = await authApi.getMe(token);
@@ -76,6 +81,9 @@ export function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
+    localStorage.removeItem("isBetaUser");
+    localStorage.removeItem("user_type");
+    localStorage.removeItem("iam_dashboard_terms_accepted");
     window.location.href = "/login";
   };
 
@@ -98,6 +106,11 @@ export function Navbar() {
           <h1 className="text-[13px] font-black text-white uppercase tracking-[0.15em] truncate">
             {currentTitle}
           </h1>
+          {isBetaUser && (
+            <span className="flex h-5 items-center rounded-full bg-[#41bf63]/20 px-2 text-[9px] font-black text-[#41bf63] shadow-[0_0_10px_rgba(65,191,99,0.2)] border border-[#41bf63]/30">
+              BETA
+            </span>
+          )}
         </div>
 
         {/* Center: Search Bar */}
@@ -139,21 +152,49 @@ export function Navbar() {
               <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-red-500 border-2 border-[#0B0D14]" />
             </button>
             
+            {isBetaUser && (
+              <div className="flex flex-col items-end mr-2 hidden sm:flex">
+                <span className="text-[9px] font-black text-[#41bf63] uppercase tracking-tighter">Experimental Build</span>
+                <span className="text-[8px] font-medium text-slate-500 uppercase tracking-tighter">v0.9 Insider</span>
+              </div>
+            )}
+
             <div className="relative group cursor-pointer">
               <Avatar className="h-8 w-8 border border-white/10 transition-all group-hover:border-[#41bf63]/50">
                 <AvatarFallback className="bg-[#13161F] text-white font-black text-[10px] uppercase">{initials}</AvatarFallback>
               </Avatar>
               
               {/* Profile Dropdown */}
-              <div className="absolute right-0 top-full w-56 pt-3 scale-95 opacity-0 pointer-events-none group-hover:scale-100 group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 z-50">
-                <div className="rounded-xl border border-white/10 bg-[#13161F] shadow-2xl overflow-hidden">
-                  <div className="p-4 border-b border-white/5">
-                    <p className="text-xs font-bold text-white truncate">{user?.username || "Admin"}</p>
-                    <p className="text-[10px] font-medium text-slate-500 truncate">{user?.email || "admin@teleroot.io"}</p>
+              <div className="absolute right-0 top-full w-64 pt-3 scale-95 opacity-0 pointer-events-none group-hover:scale-100 group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 z-50">
+                <div className="rounded-xl border border-white/10 bg-[#13161F]/95 backdrop-blur-xl shadow-2xl overflow-hidden">
+                  <div className="p-4 border-b border-white/5 bg-white/[0.02]">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-sm font-bold text-white truncate">{user?.username || "Admin"}</p>
+                      {isBetaUser && (
+                        <span className="rounded bg-[#41bf63]/10 px-1.5 py-0.5 text-[9px] font-black text-[#41bf63] border border-[#41bf63]/20">BETA</span>
+                      )}
+                    </div>
+                    <p className="text-xs font-medium text-slate-400 truncate">{user?.email || "admin@teleroot.io"}</p>
                   </div>
-                  <div className="p-1">
-                    <button className="w-full flex items-center px-3 py-2 text-[11px] font-bold text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">Profile Settings</button>
-                    <button onClick={handleLogout} className="w-full flex items-center px-3 py-2 text-[11px] font-bold text-red-400 hover:text-white hover:bg-red-500/10 rounded-lg transition-all">Logout</button>
+                  <div className="p-2 flex flex-col gap-1">
+                    <Link href="/profile?tab=settings" className="w-full flex items-center gap-3 px-3 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                      <User className="h-4 w-4 text-[#41bf63]" />
+                      Profile Settings
+                    </Link>
+                    <Link href="/profile?tab=security" className="w-full flex items-center gap-3 px-3 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                      <Shield className="h-4 w-4 text-[#41bf63]" />
+                      Security & Access
+                    </Link>
+                    <Link href="/profile?tab=team" className="w-full flex items-center gap-3 px-3 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                      <Users className="h-4 w-4 text-[#41bf63]" />
+                      Team Management
+                    </Link>
+                  </div>
+                  <div className="p-2 border-t border-white/5 bg-black/20">
+                    <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2 text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all">
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </button>
                   </div>
                 </div>
               </div>

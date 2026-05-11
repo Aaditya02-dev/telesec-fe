@@ -34,8 +34,20 @@ export default function SignupPage() {
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const searchParams = useSearchParams();
-  const redirectPath = searchParams.get("redirect");
+  const redirectPath = searchParams.get("redirect") || "/dashboard";
+
+  useEffect(() => {
+    setIsMounted(true);
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      window.location.href = redirectPath;
+    } else {
+      setIsCheckingAuth(false);
+    }
+  }, [redirectPath]);
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,7 +111,7 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen w-full bg-[#1F2C30] text-white flex items-center justify-center p-4 md:p-6 lg:p-10 font-sans overflow-hidden">
-      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-[38%_62%] gap-6 lg:gap-10 items-stretch h-[90vh] max-h-[900px]">
+      <div className={`transition-opacity duration-300 ${(!isMounted || isCheckingAuth) ? 'opacity-0' : 'opacity-100'} w-full max-w-7xl grid grid-cols-1 md:grid-cols-[38%_62%] gap-6 lg:gap-10 items-stretch h-[90vh] max-h-[900px]`}>
         
         {/* Left Side - Form Section */}
         <div className="flex flex-col justify-center px-4 lg:px-8 xl:px-12 py-6">

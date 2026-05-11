@@ -24,9 +24,11 @@ import {
   RefreshCw,
   ShieldAlert,
   Lock,
-  Key
+  Key,
+  Code2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { DevTeamModal } from "./DevTeamModal";
 
 const productsMenu = {
   intelligence: [
@@ -71,6 +73,7 @@ const navLinks = [
   { label: "Resources", href: "/resources", hasDropdown: true },
   { label: "Pricing", href: "/pricing" },
   { label: "FAQ", href: "#faq" },
+  { label: "Join Dev-Team", href: "#", isDevTeam: true },
 ];
 
 export function LandingNavbar() {
@@ -78,14 +81,15 @@ export function LandingNavbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isDevTeamModalOpen, setIsDevTeamModalOpen] = useState(false);
   const router = useRouter();
 
   const handleGetStarted = () => {
-    const token = typeof window !== "undefined" 
+    const token = typeof window !== "undefined"
       ? (localStorage.getItem("access_token") || localStorage.getItem("token") || localStorage.getItem("refresh_token"))
       : null;
     if (token) {
-      router.push("/dashboard");
+      router.push("/pricing");
     } else {
       router.push("/signup");
     }
@@ -106,18 +110,20 @@ export function LandingNavbar() {
   return (
     <header className="fixed left-0 right-0 top-0 z-50 pt-4 px-4 md:px-8 transition-all duration-300">
       <div
-        className={`mx-auto flex h-16 w-full max-w-7xl items-center justify-between rounded-full px-8 transition-all duration-500 ${scrolled
+        className={`mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between rounded-full px-3 lg:px-4 xl:px-10 transition-all duration-500 ${scrolled
           ? "bg-[#1F2C30]/90 backdrop-blur-xl shadow-2xl border border-white/10"
           : "bg-black/20 backdrop-blur-md border border-white/20 shadow-lg"
           }`}
       >
         {/* Logo */}
         <Link href="/" className="flex items-center shrink-0">
-          <span className="text-xl font-bold tracking-[0.2em] text-white uppercase">TeleRoot</span>
+          <span className="text-lg lg:text-base xl:text-xl font-bold tracking-[0.2em] text-white uppercase">TeleRoot</span>
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-10">
+        {/* Desktop Nav & Action Buttons Wrapper */}
+        <div className="hidden lg:flex items-center gap-4 xl:gap-8 shrink-0">
+          {/* Desktop Nav */}
+          <nav className="flex items-center gap-4 xl:gap-8 shrink-0">
           {navLinks.map((link) => (
             <div
               key={link.label}
@@ -127,15 +133,23 @@ export function LandingNavbar() {
             >
               {link.hasDropdown ? (
                 <button
-                  className="flex items-center gap-1 text-[13px] font-semibold uppercase tracking-widest text-white transition-all hover:text-[#41bf63] outline-none"
+                  className="flex items-center gap-1 text-[11px] xl:text-[13px] font-semibold uppercase tracking-widest text-white transition-all hover:text-[#41bf63] outline-none"
                 >
                   {link.label}
                   <ChevronDown className={`h-3 w-3 transition-transform ${activeDropdown === link.label ? 'rotate-180' : ''}`} />
                 </button>
+              ) : link.label === "Join Dev-Team" ? (
+                <button
+                  onClick={() => setIsDevTeamModalOpen(true)}
+                  className="px-3 xl:px-6 py-1.5 xl:py-2 rounded-xl border-2 border-[#41bf63] text-white hover:bg-[#41bf63] hover:text-black transition-all text-[10px] xl:text-[13px] font-bold uppercase tracking-widest flex items-center justify-center gap-1 xl:gap-2 whitespace-nowrap"
+                >
+                  <Code2 className="h-3 w-3 xl:h-4 xl:w-4" />
+                  {link.label}
+                </button>
               ) : (
                 <Link
                   href={link.href}
-                  className="flex items-center gap-1 text-[13px] font-semibold uppercase tracking-widest text-white transition-all hover:text-[#41bf63]"
+                  className="flex items-center gap-1 text-[11px] xl:text-[13px] font-semibold uppercase tracking-widest text-white transition-all hover:text-[#41bf63]"
                 >
                   {link.label}
                 </Link>
@@ -293,30 +307,31 @@ export function LandingNavbar() {
               </AnimatePresence>
             </div>
           ))}
-        </nav>
+          </nav>
 
-        {/* Action Buttons */}
-        <div className="hidden md:flex items-center gap-4">
+          {/* Action Buttons */}
+          <div className="flex items-center gap-4 xl:gap-8 shrink-0">
           <Link
             href={isLoggedIn ? "/dashboard" : "/login"}
-            className="px-6 py-2 rounded-xl border-2 border-[#41bf63] text-white hover:bg-[#41bf63] hover:text-black transition-all text-[13px] font-bold uppercase tracking-widest flex items-center justify-center"
+            className="px-3 xl:px-6 py-1.5 xl:py-2 rounded-xl border-2 border-[#41bf63] text-white hover:bg-[#41bf63] hover:text-black transition-all text-[10px] xl:text-[13px] font-bold uppercase tracking-widest flex items-center justify-center whitespace-nowrap"
           >
             {isLoggedIn ? "Go to Console" : "Sign In to Console"}
           </Link>
           <button
             onClick={handleGetStarted}
-            className="group flex items-center rounded-full bg-[#41bf63] text-[12px] font-bold uppercase tracking-wider text-black transition-all hover:bg-[#bce628] hover:shadow-[0_0_20px_rgba(65,191,99,0.3)]"
+            className="group flex items-center rounded-full bg-[#41bf63] text-[10px] xl:text-[12px] font-bold uppercase tracking-wider text-black transition-all hover:bg-[#bce628] hover:shadow-[0_0_20px_rgba(65,191,99,0.3)] whitespace-nowrap"
           >
-            <span className="pl-6 pr-4 py-2.5">{isLoggedIn ? "Upgrade Plan" : "Get Started Free"}</span>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black/10 transition-transform group-hover:scale-110">
-              <ArrowUpRight className="h-4 w-4" />
+            <span className="pl-3 xl:pl-6 pr-2 xl:pr-4 py-1.5 xl:py-2.5">{isLoggedIn ? "Upgrade Plan" : "Get Started Free"}</span>
+            <div className="flex h-7 w-7 xl:h-9 xl:w-9 items-center justify-center rounded-full bg-black/10 transition-transform group-hover:scale-110">
+              <ArrowUpRight className="h-3 w-3 xl:h-4 xl:w-4" />
             </div>
           </button>
+          </div>
         </div>
 
         {/* Mobile Toggle */}
         <button
-          className="rounded-md p-2 text-white md:hidden"
+          className="rounded-md p-2 text-white lg:hidden shrink-0"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -330,19 +345,34 @@ export function LandingNavbar() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="mx-auto mt-2 max-w-7xl rounded-2xl bg-[#223135] p-4 shadow-xl md:hidden"
+            className="mx-auto mt-2 max-w-7xl rounded-2xl bg-[#223135] p-4 shadow-xl lg:hidden"
           >
             <div className="flex flex-col gap-2">
               {navLinks.map((link) => (
                 <div key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="flex items-center justify-between rounded-lg px-4 py-3 text-base font-medium text-white hover:bg-white/10 hover:text-[#41bf63]"
-                    onClick={() => !link.hasDropdown && setMobileOpen(false)}
-                  >
-                    {link.label}
-                    {link.hasDropdown && <ChevronDown className="h-4 w-4" />}
-                  </Link>
+                  {link.label === "Join Dev-Team" ? (
+                    <button
+                      onClick={() => {
+                        setMobileOpen(false);
+                        setIsDevTeamModalOpen(true);
+                      }}
+                      className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-base font-medium text-[#41bf63] hover:bg-[#41bf63]/10"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Code2 className="h-4 w-4" />
+                        {link.label}
+                      </span>
+                    </button>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className="flex items-center justify-between rounded-lg px-4 py-3 text-base font-medium text-white hover:bg-white/10 hover:text-[#41bf63]"
+                      onClick={() => !link.hasDropdown && setMobileOpen(false)}
+                    >
+                      {link.label}
+                      {link.hasDropdown && <ChevronDown className="h-4 w-4" />}
+                    </Link>
+                  )}
                 </div>
               ))}
               <div className="mt-4 flex flex-col gap-3 px-4 pb-4">
@@ -353,7 +383,7 @@ export function LandingNavbar() {
                 >
                   {isLoggedIn ? "Console" : "Login"}
                 </Link>
-                <button 
+                <button
                   className="flex w-full items-center justify-center gap-2 rounded-full bg-[#41bf63] py-3 text-sm font-bold text-black"
                   onClick={() => {
                     setMobileOpen(false);
@@ -368,6 +398,8 @@ export function LandingNavbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <DevTeamModal isOpen={isDevTeamModalOpen} onClose={() => setIsDevTeamModalOpen(false)} />
     </header>
   );
 }

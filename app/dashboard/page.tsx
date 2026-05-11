@@ -1,3 +1,5 @@
+"use client";
+
 import { AlertsTable } from "@/components/AlertsTable";
 import { CopilotPanel } from "@/components/CopilotPanel";
 import { KpiCard } from "@/components/KpiCard";
@@ -9,13 +11,48 @@ import { Sidebar } from "@/components/Sidebar";
 import { TopologyGraph } from "@/components/TopologyGraph";
 import { TrafficChart } from "@/components/TrafficChart";
 import { kpis } from "@/lib/mock-data";
+import { useEffect, useState } from "react";
+import { Sparkles, Zap, Brain, Target } from "lucide-react";
+import { IamTermsModal } from "@/components/IamTermsModal";
 
 export default function DashboardPage() {
+  const [isBetaUser, setIsBetaUser] = useState(false);
+  const [showIamModal, setShowIamModal] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+
+    const beta = localStorage.getItem("isBetaUser") === "true";
+    setIsBetaUser(beta);
+
+    const userType = localStorage.getItem("user_type");
+    const hasAcceptedTerms = localStorage.getItem("iam_dashboard_terms_accepted") === "true";
+
+    if (userType === "iam" && !hasAcceptedTerms) {
+      setShowIamModal(true);
+    }
+  }, []);
+
+  const handleAcceptTerms = () => {
+    localStorage.setItem("iam_dashboard_terms_accepted", "true");
+    setShowIamModal(false);
+  };
+
   return (
     <div className="min-h-screen bg-[#0B0C10] text-white selection:bg-[#41bf63]/30">
-      <Sidebar />
-      <div className="app-shell lg:pl-72 flex flex-col h-screen overflow-hidden">
-        <Navbar />
+      <IamTermsModal isOpen={isMounted && showIamModal} onAccept={handleAcceptTerms} />
+      
+      {/* Hide dashboard content while IAM modal is active or during initial hydration to prevent flash */}
+      <div className={`transition-opacity duration-500 ${(!isMounted || showIamModal) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        <Sidebar />
+        <div className="app-shell lg:pl-72 flex flex-col h-screen overflow-hidden">
+          <Navbar />
         <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8 space-y-6">
           {/* Welcome Header */}
           <div className="relative overflow-hidden rounded-2xl bg-[#13161F] border border-white/5 shadow-2xl">
@@ -76,6 +113,26 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+
+          {/* Beta Insider Banner */}
+          {isBetaUser && (
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#41bf63]/20 via-[#41bf63]/5 to-transparent border border-[#41bf63]/30 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#41bf63] text-black">
+                    <Sparkles className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black uppercase tracking-widest text-white">Insider Beta Mode Active</h3>
+                    <p className="text-[10px] font-medium text-slate-500">You have access to experimental topology AI and predictive automation playbooks.</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="rounded bg-[#41bf63]/20 px-2 py-1 text-[8px] font-black text-[#41bf63] uppercase">v0.9-Insider</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Service Health Grid */}
           <section>
@@ -189,9 +246,45 @@ export default function DashboardPage() {
                   <RiskPanel />
                 </div>
               </div>
+
+              {/* Beta-only Card */}
+              {isBetaUser && (
+                <div className="rounded-2xl border border-[#41bf63]/20 bg-[#13161F] shadow-xl overflow-hidden relative group">
+                  <div className="absolute top-0 right-0 p-3">
+                    <Sparkles className="h-4 w-4 text-[#41bf63]" />
+                  </div>
+                  <div className="p-5 border-b border-white/5 flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">Predictive Insights</h3>
+                  </div>
+                  <div className="p-5 space-y-4">
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 flex h-6 w-6 items-center justify-center rounded bg-blue-500/10 text-blue-400">
+                        <Brain className="h-3.5 w-3.5" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-white uppercase">Traffic Anomaly Detected</p>
+                        <p className="text-[9px] text-slate-500">AI predicts 15% packet loss in Mumbai node within 2 hours.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 flex h-6 w-6 items-center justify-center rounded bg-yellow-500/10 text-yellow-400">
+                        <Target className="h-3.5 w-3.5" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-white uppercase">Optimization Target</p>
+                        <p className="text-[9px] text-slate-500">Rerouting Segment-04 could save 40ms latency.</p>
+                      </div>
+                    </div>
+                    <button className="w-full py-2.5 rounded-lg bg-[#41bf63] text-black text-[10px] font-black uppercase tracking-widest transition-all hover:bg-[#bce628]">
+                      Apply Beta Fix
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </section>
         </main>
+      </div>
       </div>
     </div>
   );

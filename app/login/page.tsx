@@ -32,9 +32,21 @@ export default function LoginPage() {
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const searchParams = useSearchParams();
   const router = useRouter();
   const redirectPath = searchParams.get("redirect") || "/dashboard";
+
+  useEffect(() => {
+    setIsMounted(true);
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      window.location.href = redirectPath;
+    } else {
+      setIsCheckingAuth(false);
+    }
+  }, [redirectPath]);
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,6 +70,7 @@ export default function LoginPage() {
       // Store tokens (simple localStorage for demo, usually cookies/context)
       localStorage.setItem("access_token", response.access);
       localStorage.setItem("refresh_token", response.refresh);
+      localStorage.setItem("user_type", userType || "root");
       
       window.location.href = redirectPath;
     } catch (err: any) {
@@ -99,7 +112,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full bg-[#1F2C30] text-white flex items-center justify-center p-4 md:p-6 lg:p-10 font-sans overflow-hidden">
-      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-[38%_62%] gap-6 lg:gap-10 items-stretch h-[90vh] max-h-[900px]">
+      <div className={`transition-opacity duration-300 ${(!isMounted || isCheckingAuth) ? 'opacity-0' : 'opacity-100'} w-full max-w-7xl grid grid-cols-1 md:grid-cols-[38%_62%] gap-6 lg:gap-10 items-stretch h-[90vh] max-h-[900px]`}>
         
         {/* Left Side - Form Section */}
         <div className="flex flex-col justify-center px-4 lg:px-6 xl:px-10 py-4">
@@ -118,7 +131,13 @@ export default function LoginPage() {
 
           <div className="mb-4">
             <h1 className="text-xl lg:text-2xl font-bold mb-0.5">Sign in to Teleroot</h1>
-            <p className="text-slate-400 text-[11px]">Access your account to continue</p>
+            <div className="flex items-center gap-2">
+              <p className="text-slate-400 text-[11px]">Access your account to continue</p>
+              <div className="flex items-center gap-1 rounded-full bg-[#41bf63]/10 px-1.5 py-0.5 border border-[#41bf63]/20">
+                <span className="h-1 w-1 rounded-full bg-[#41bf63] animate-pulse" />
+                <span className="text-[8px] font-black text-[#41bf63] uppercase">Insider Beta</span>
+              </div>
+            </div>
           </div>
 
           {/* User Type Selection */}
@@ -269,6 +288,42 @@ export default function LoginPage() {
                   </label>
                   <Link href="#" className="text-[11px] font-bold text-[#41bf63] hover:underline">Forgot password?</Link>
                 </div>
+
+                {userType === "iam" && (
+                  <div className="pt-2 pb-2">
+                    <label className="text-[11px] font-black uppercase tracking-widest text-white mb-3 block">
+                      TERMS & POLICIES <span className="text-red-500">*</span>
+                    </label>
+                    <div className="space-y-3">
+                      <label className="flex items-center gap-3 cursor-pointer group">
+                        <div className="relative flex h-4 w-4 shrink-0 items-center justify-center rounded-sm bg-white transition-all shadow-[0_0_8px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_12px_rgba(255,255,255,0.4)]">
+                          <input type="checkbox" required className="peer absolute inset-0 opacity-0 cursor-pointer z-10" />
+                          <div className="absolute inset-0 flex items-center justify-center scale-0 transition-transform duration-200 peer-checked:scale-100">
+                            <svg className="h-3 w-3 text-[#41bf63] drop-shadow-[0_0_3px_rgba(65,191,99,0.8)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          </div>
+                        </div>
+                        <span className="text-xs text-white">
+                          I agree to the Teleroot <Link href="/terms" className="text-[#41bf63] hover:underline">Terms & Conditions</Link>.
+                        </span>
+                      </label>
+                      <label className="flex items-center gap-3 cursor-pointer group">
+                        <div className="relative flex h-4 w-4 shrink-0 items-center justify-center rounded-sm bg-white transition-all shadow-[0_0_8px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_12px_rgba(255,255,255,0.4)]">
+                          <input type="checkbox" required className="peer absolute inset-0 opacity-0 cursor-pointer z-10" />
+                          <div className="absolute inset-0 flex items-center justify-center scale-0 transition-transform duration-200 peer-checked:scale-100">
+                            <svg className="h-3 w-3 text-[#41bf63] drop-shadow-[0_0_3px_rgba(65,191,99,0.8)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          </div>
+                        </div>
+                        <span className="text-xs text-white">
+                          I have read and agree to the <Link href="/privacy" className="text-[#41bf63] hover:underline">Privacy Policy</Link>.
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                )}
 
                 <button 
                   type="submit"

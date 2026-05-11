@@ -239,7 +239,7 @@ export default function FiberMonitoringPage() {
                     value={searchTerm}
                   />
                 </div>
-                <select className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-xs font-bold text-white outline-none focus:border-[#41bf63]" onChange={(event) => setStatusFilter(event.target.value)} value={statusFilter}>
+                <select className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-xs font-bold text-white outline-none focus:border-[#41bf63] [&>option]:bg-[#13161F] [&>option]:text-white" onChange={(event) => setStatusFilter(event.target.value)} value={statusFilter}>
                   {["All", "Safe", "Moderate", "Degraded"].map((item) => <option key={item}>{item}</option>)}
                 </select>
                 <MiniButton><Filter className="h-3.5 w-3.5" /> Fiber Bed</MiniButton>
