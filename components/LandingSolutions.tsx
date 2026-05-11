@@ -1,13 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
-  Activity, 
-  Zap, 
-  Shield, 
-  Globe, 
-  BarChart3, 
-  Cpu 
+import {
+  Activity,
+  Zap,
+  Shield,
+  Globe,
+  BarChart3,
+  Cpu
 } from "lucide-react";
 
 const solutions = [
@@ -72,7 +72,7 @@ export function LandingSolutions() {
               <p className="text-sm font-medium leading-relaxed text-slate-400">
                 {solution.description}
               </p>
-              
+
               {/* Subtle decorative element */}
               <div className="absolute -right-4 -bottom-4 h-24 w-24 rounded-full bg-[#41bf63]/5 blur-2xl group-hover:bg-[#41bf63]/10 transition-colors" />
             </motion.div>

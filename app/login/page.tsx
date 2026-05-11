@@ -14,14 +14,14 @@ import {
   Monitor,
   Cpu
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
 import { GoogleLoginModal } from "@/components/GoogleLoginModal";
 import { authApi } from "@/lib/api";
 
-export default function LoginPage() {
+function LoginContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
   const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
@@ -118,11 +118,6 @@ export default function LoginPage() {
         <div className="flex flex-col justify-center px-4 lg:px-6 xl:px-10 py-4">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 mb-5">
-            <div className="h-8 w-8 flex items-center justify-center rounded-lg bg-[#41bf63] text-black">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7 19V5H14C16.2091 5 18 6.79086 18 9C18 11.2091 16.2091 13 14 13H7M7 13L18 19" stroke="black" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
             <div className="flex flex-col">
               <span className="text-xl font-bold tracking-[0.1em] uppercase leading-none">TELEROOT</span>
               <span className="text-[6px] font-bold text-[#41bf63] uppercase tracking-[0.2em] mt-1">THE NETWORK AI INFRASTRUCTURE PLATFORM</span>
@@ -420,5 +415,13 @@ export default function LoginPage() {
         onSelect={handleGoogleSelect}
       />
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#1F2C30]" />}>
+      <LoginContent />
+    </Suspense>
   );
 }

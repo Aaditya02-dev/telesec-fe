@@ -15,14 +15,14 @@ import {
   Cpu,
   User
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
 import { GoogleLoginModal } from "@/components/GoogleLoginModal";
 import { authApi } from "@/lib/api";
 
-export default function SignupPage() {
+function SignupContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
   const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
@@ -373,5 +373,13 @@ export default function SignupPage() {
         onSelect={handleGoogleSelect}
       />
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#1F2C30]" />}>
+      <SignupContent />
+    </Suspense>
   );
 }
