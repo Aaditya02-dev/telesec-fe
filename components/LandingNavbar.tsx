@@ -315,7 +315,7 @@ export function LandingNavbar() {
             href={isLoggedIn ? "/dashboard" : "/login"}
             className="px-3 xl:px-6 py-1.5 xl:py-2 rounded-xl border-2 border-[#41bf63] text-white hover:bg-[#41bf63] hover:text-black transition-all text-[10px] xl:text-[13px] font-bold uppercase tracking-widest flex items-center justify-center whitespace-nowrap"
           >
-            {isLoggedIn ? "Go to Console" : "Sign In to Console"}
+            {isLoggedIn ? "Go to Dashboard" : "Go to Console"}
           </Link>
           <button
             onClick={handleGetStarted}
@@ -381,7 +381,7 @@ export function LandingNavbar() {
                   className="flex w-full items-center justify-center rounded-full border border-white/10 bg-white/5 py-3 text-sm font-bold text-white"
                   onClick={() => setMobileOpen(false)}
                 >
-                  {isLoggedIn ? "Console" : "Login"}
+                  {isLoggedIn ? "Dashboard" : "Console"}
                 </Link>
                 <button
                   className="flex w-full items-center justify-center gap-2 rounded-full bg-[#41bf63] py-3 text-sm font-bold text-black"
