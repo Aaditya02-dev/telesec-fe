@@ -10,6 +10,7 @@ import {
   Eye, 
   EyeOff, 
   ArrowRight,
+  CheckCircle2,
   ShieldCheck,
   Monitor,
   Cpu,
@@ -21,6 +22,11 @@ import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { GoogleLoginModal } from "@/components/GoogleLoginModal";
 import { authApi } from "@/lib/api";
+import { iamCompanyEmailMessage, isPersonalEmail } from "@/lib/email-validation";
+
+function getSignupUserType(): "root" | "iam" {
+  return "root";
+}
 
 function SignupContent() {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,6 +39,7 @@ function SignupContent() {
     password: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [successEmail, setSuccessEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -58,7 +65,16 @@ function SignupContent() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccessEmail(null);
     setIsLoading(true);
+
+    const userType = getSignupUserType();
+
+    if (userType === "iam" && isPersonalEmail(formData.email)) {
+      setError(iamCompanyEmailMessage);
+      setIsLoading(false);
+      return;
+    }
 
     try {
       await authApi.register({
@@ -67,11 +83,16 @@ function SignupContent() {
         password: formData.password,
         full_name: formData.fullName,
         company_name: formData.companyName,
-        user_type: 'root', // default for signup
+        user_type: userType, // default for signup
       });
-      
-      // Auto login after signup or redirect to login
-      window.location.href = `/login?registered=true${redirectPath ? `&redirect=${encodeURIComponent(redirectPath)}` : ""}`;
+
+      setSuccessEmail(formData.email);
+      setFormData({
+        fullName: "",
+        email: "",
+        companyName: "",
+        password: "",
+      });
     } catch (err: any) {
       setError(err.message || "Registration failed. Please try again.");
     } finally {
@@ -206,6 +227,18 @@ function SignupContent() {
           {error && (
             <div className="mb-3 p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold text-center">
               {error}
+            </div>
+          )}
+
+          {successEmail && (
+            <div className="mb-3 rounded-lg border border-[#41bf63]/25 bg-[#41bf63]/10 p-3 text-center">
+              <div className="mb-2 flex items-center justify-center gap-2 text-[#41bf63]">
+                <CheckCircle2 className="h-4 w-4" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Check your email</span>
+              </div>
+              <p className="text-xs font-semibold leading-relaxed text-slate-300">
+                We sent a verification link to {successEmail}. Verify your email before signing in.
+              </p>
             </div>
           )}
 

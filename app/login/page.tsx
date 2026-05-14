@@ -20,6 +20,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { GoogleLoginModal } from "@/components/GoogleLoginModal";
 import { authApi } from "@/lib/api";
+import { iamCompanyEmailMessage, isPersonalEmail } from "@/lib/email-validation";
 
 function LoginContent() {
   const [showPassword, setShowPassword] = useState(false);
@@ -59,12 +60,19 @@ function LoginContent() {
     setError(null);
     setIsLoading(true);
 
+    if (userType === "iam" && isPersonalEmail(formData.identifier)) {
+      setError(iamCompanyEmailMessage);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       // For Django JWT, we usually send 'username' and 'password'
       // Since identifier can be email or account ID, we use it as username in our simple setup
       const response = await authApi.login({
         username: formData.identifier,
         password: formData.password,
+        user_type: userType || "root",
       });
       
       // Store tokens (simple localStorage for demo, usually cookies/context)
@@ -281,7 +289,7 @@ function LoginContent() {
                     </div>
                     <span className="text-[11px] text-slate-400">Remember me</span>
                   </label>
-                  <Link href="#" className="text-[11px] font-bold text-[#41bf63] hover:underline">Forgot password?</Link>
+                  <Link href="/forgot-password" className="text-[11px] font-bold text-[#41bf63] hover:underline">Forgot password?</Link>
                 </div>
 
                 {userType === "iam" && (

@@ -1,0 +1,17 @@
+  ▲ Next.js 14.2.5
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 3.1s
+ ○ Compiling /verify-email ...
+ ✓ Compiled /verify-email in 3.3s (517 modules)
+ GET /verify-email 200 in 3678ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 601ms (520 modules)
+ GET /verify-email?uid=MTE&token=d8j13d-be0ce124325f3ce7d470198e2580fa22 404 in 824ms
+ GET /verify-email?uid=MTE&token=d8j13d-be0ce124325f3ce7d470198e2580fa22 404 in 114ms
+ GET /verify-email 404 in 60ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1301ms (744 modules)
+ GET /verify-email?uid=MTI&token=d8j197-9df6527e07827b847393a568edde3529 404 in 1613ms
+ GET /verify-email 200 in 225ms

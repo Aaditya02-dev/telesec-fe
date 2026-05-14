@@ -1,0 +1,58 @@
+  ▲ Next.js 14.2.5
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 3.1s
+ ○ Compiling / ...
+ ✓ Compiled / in 11s (2165 modules)
+ GET / 200 in 11690ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 5.2s (3309 modules)
+ GET /dashboard 200 in 5700ms
+ ○ Compiling /pricing ...
+ ✓ Compiled /pricing in 835ms (3313 modules)
+ GET /pricing 200 in 1026ms
+ GET / 200 in 231ms
+ GET /dashboard 200 in 255ms
+ ✓ Compiled in 2.2s (1655 modules)
+ ✓ Compiled in 1359ms (1655 modules)
+ ✓ Compiled in 843ms (1655 modules)
+ ✓ Compiled in 707ms (1655 modules)
+ ✓ Compiled in 841ms (1655 modules)
+ ✓ Compiled in 1071ms (1655 modules)
+ ✓ Compiled in 807ms (1655 modules)
+ ✓ Compiled in 1459ms (1655 modules)
+ ✓ Compiled in 457ms (1655 modules)
+ ✓ Compiled in 1756ms (1655 modules)
+ ✓ Compiled in 1135ms (1641 modules)
+ ✓ Compiled in 1242ms (1655 modules)
+ ✓ Compiled in 1051ms (1655 modules)
+ ✓ Compiled in 1190ms (1655 modules)
+ ✓ Compiled in 1359ms (1655 modules)
+ ✓ Compiled in 892ms (1655 modules)
+ ○ Compiling /verify-email ...
+ ✓ Compiled /verify-email in 1925ms (1903 modules)
+ GET /verify-email?uid=OQ&token=d8j0q1-884ee28e4be250ca973aac9960fffa5c 200 in 2183ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 1230ms (2334 modules)
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 816ms (1266 modules)
+ GET /dashboard 200 in 1455ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1285ms (2924 modules)
+ GET /_next/static/chunks/app/dashboard/page.js 404 in 1383ms
+ GET /dashboard 200 in 278ms
+ GET /_next/static/chunks/app/dashboard/page.js 404 in 32ms
+ GET /dashboard 404 in 57ms
+ ○ Compiling / ...
+ ✓ Compiled / in 829ms (1680 modules)
+ GET / 200 in 1456ms
+ GET /_next/static/chunks/app/page.js 404 in 141ms
+ GET /login 200 in 78ms
+ GET /dashboard 200 in 140ms
+ GET /_next/static/chunks/app/dashboard/page.js 404 in 24ms
+ GET /verify-email?uid=OQ&token=d8j0q1-884ee28e4be250ca973aac9960fffa5c 404 in 66ms
+ GET /verify-email?uid=OQ&token=d8j0q1-884ee28e4be250ca973aac9960fffa5c 404 in 66ms
+ GET /verify-email 404 in 29ms
+ GET /verify-email 404 in 48ms
+[?25h
