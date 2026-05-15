@@ -1,0 +1,20 @@
+﻿steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'us-central1-docker.pkg.dev/telesec-ai/telesec-repo/frontend:', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-central1-docker.pkg.dev/telesec-ai/telesec-repo/frontend:']
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'gcloud'
+  args:
+  - 'run'
+  - 'deploy'
+  - 'telesec-frontend'
+  - '--image=us-central1-docker.pkg.dev/telesec-ai/telesec-repo/frontend:'
+  - '--region=us-central1'
+  - '--allow-unauthenticated'
+  - '--memory=512Mi'
+  - '--cpu=1'
+  - '--min-instances=0'
+  - '--set-env-vars=NEXT_PUBLIC_API_URL=https://telesec-backend-kkylnubjxq-uc.a.run.app'
+options:
+  logging: CLOUD_LOGGING_ONLY
