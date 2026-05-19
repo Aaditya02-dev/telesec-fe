@@ -1,4 +1,5 @@
-﻿import { LandingNavbar } from "@/components/LandingNavbar";
+﻿<!-- CI/CD Test - 2026-05-19 - Live Deployment Verified -->
+import { LandingNavbar } from "@/components/LandingNavbar";
 import { LandingHero } from "@/components/LandingHero";
 import { LandingLogos } from "@/components/LandingLogos";
 import { LandingProblem } from "@/components/LandingProblem";
@@ -50,4 +51,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
 
