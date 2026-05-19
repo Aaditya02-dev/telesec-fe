@@ -1,4 +1,5 @@
-﻿<!-- CI/CD Test - 2026-05-19 - Live Deployment Verified -->
+﻿// CI/CD Test - 2026-05-19 - Live Deployment Verified
+<!-- CI/CD Test - 2026-05-19 - Live Deployment Verified -->
 import { LandingNavbar } from "@/components/LandingNavbar";
 import { LandingHero } from "@/components/LandingHero";
 import { LandingLogos } from "@/components/LandingLogos";
@@ -51,5 +52,6 @@ export default function LandingPage() {
     </div>
   );
 }
+
 
 
